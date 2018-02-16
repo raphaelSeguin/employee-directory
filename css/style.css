@@ -2,7 +2,7 @@
   /* COLORS*/
   --back-color: #fff;
   --container-color: #f0f0f0;
-  --card-color: #fff;
+  --card-color: #fcfcfc;
   --picture-color: black;
   --infos-color: lightblue;
   --modal-color: #eee;
@@ -39,6 +39,7 @@ a {
   flex-direction: row;
   flex-wrap: wrap;
   overflow: hidden;
+  border: 2px solid #dfdfdf;
 }
 .title-bar {
   display: flex;
@@ -57,8 +58,12 @@ a {
 }
 .filter {
   width: 20%;
-  margin: 10px auto;
+  height: 20px;
+  margin: 20px 50px 0;
   background-color: inherit;
+}
+.filter:focus {
+
 }
 .card {
   width: var(--card-width);
@@ -73,6 +78,18 @@ a {
   margin-top: 10px;
   margin-left: 10px;
   border: 2px solid #dfdfdf;
+  cursor: pointer;
+  transition: border 0.25s, background-color 0.25s;
+}
+.card:hover {
+  border: 2px solid #fff;
+  background: #fff;
+}
+.card.filtered-out,
+.card.filtered-out:hover {
+  border: 2px solid #dfdfdf;
+  background-color: #dfdfdf;
+  cursor: default;
 }
 .picture {
   width: var(--picture-height);

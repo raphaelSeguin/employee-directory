@@ -1,33 +1,36 @@
-/*
-Add a way to filter the directory by name or username. To do this, you’ll need to request a random user nationality that will only return data in the English alphabet. Note: you don't have to rely on the API to return search results.
-
-You'll need to write functionality that filters results once they already on the page.
-
-Add a way to move back and forth between employee detail windows when the modal window is open.
-NOTE:
-
-To get an "Exceeds Expectations" grade for this project, you'll need to complete each of the items in this section. See the rubric in the "How You'll Be Graded" tab above for details on how you'll be graded.
-If you’re shooting for the "Exceeds Expectations" grade, it is recommended that you mention so in your submission notes.
-Passing grades are final. If you try for the "Exceeds Expectations" grade, but miss an item and receive a “Meets Expectations” grade, you won’t get a second chance. Exceptions can be made for items that have been misgraded in review.
-*/
-
+// 'be serious'
 'use strict';
 
+// global variables
 let employeesModels = [];
-let display;
+const bigIndex = ( () => {
+  let value = 0;
+  return {
+    increment: function(val) {
+      value = (value + val + 12) % 12;
+      return value;
+    },
+    getValue: function() {
+      return value;
+    },
+    setValue: function(val) {
+      value = val;
+    }
+  }
+})();
 
+// elements
 const containerDiv = document.getElementById('container');
 const modalWindow = document.getElementById('modal');
 const fadeOut = document.getElementById('fade-out');
 const filterInput = document.getElementById('filter');
 
-filterInput.addEventListener('input', (event) => {
-  console.log(event.target.value);
-})
-
+// utility function
 const capitalizeFirstLetter = word => {
   return word.substr(0, 1).toUpperCase() + word.substr(1);
 };
+
+// build the elements and attach event handlers
 const cardFill = (data, index) => {
   const {picture, name, email, city} = data;
   const card = document.createElement('div');
@@ -41,13 +44,16 @@ const cardFill = (data, index) => {
       <div class="city">${city}</div>
     </div>`);
   card.addEventListener('click', event => {
-    display = card.id;
-    showModal(display);
+    if( !card.classList.contains('filtered-out') ) {
+      showModal(card.id);
+    }
   });
   return card;
 };
-const modalFill = data => {
-  const {picture, name, email, cellnumber, address, city, birthdate} = data;
+const modalFill = number => {
+  const {picture, name, email, cellnumber, address, city, birthdate} = employeesModels[number];
+  modalWindow.className = number;
+  bigIndex.setValue(number);
   modalWindow.innerHTML =
    `<a id="close-modal" href="#">X</a>
     <img class="picture modal" src="${picture}" alt="">
@@ -62,7 +68,7 @@ const modalFill = data => {
       <a id="back-modal" href="#">&lt;&lt;</a>
       <a id="forth-modal" href="#">&gt;&gt;</a>
     </div>`;
-
+  // elements on the modal
   const closeModalAnchor = document.getElementById('close-modal');
   const backModalAnchor = document.getElementById('back-modal');
   const forthModalAnchor = document.getElementById('forth-modal');
@@ -72,14 +78,13 @@ const modalFill = data => {
     fadeOut.style.display = 'none';
   });
   backModalAnchor.addEventListener('click', () => {
-    display = (display + 11) % 12;
-    modalFill( employeesModels[display] );
+    modalFill( bigIndex.increment( -1 ) );
   });
   forthModalAnchor.addEventListener('click', () => {
-    display = (display + 13) % 12;
-    modalFill( employeesModels[display] );
+    modalFill( bigIndex.increment( 1 ) );
   });
 }
+// take the API results and spit out only what we need
 const recondition = json => {
   return {
     picture: json.picture.large,
@@ -95,12 +100,12 @@ const recondition = json => {
 };
 
 const showModal = number => {
-  modalFill(employeesModels[number]);
+  modalFill(number);
   modalWindow.style.display = 'block';
   fadeOut.style.display = 'block';
-  console.log('show maodal n° ' + number);
 };
 
+// initialize the page (load the content and fills the page)
 const init = number => {
   return new Promise( (resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -126,5 +131,29 @@ const init = number => {
     containerDiv.insertAdjacentElement('beforeend', el);
   }))
 };
+
+// handles events from the text input
+filterInput.addEventListener('input', (event) => {
+  //
+  const regExpToMatch = new RegExp(event.target.value.toUpperCase());
+  // take the card elements
+  const cardsArray = Array.from(document.getElementsByClassName('card'));
+  // for each card
+  cardsArray.forEach( (card) => {
+    // get the name div content
+    const cardName = card.getElementsByClassName('name')[0].textContent.toUpperCase();
+    // add or remove the class filtered-out if the name matches the text input
+    if ( regExpToMatch.test(cardName) ) {
+      card.classList.remove('filtered-out');
+    } else {
+      card.classList.add('filtered-out');
+    }
+  });
+  // set the value of filteredOut property
+  employeesModels = employeesModels.map( object => {
+    object.filteredOut = !regExpToMatch.test(object.name.toUpperCase());
+    return object;
+  });
+})
 
 init(12);

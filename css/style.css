@@ -7,7 +7,7 @@
   --infos-color: lightblue;
   --modal-color: #eee;
   /* DIMENSIONS*/
-  --container-width: 940px;
+  --container-width: 944px;
   --card-width: 300px;
   --card-height: 130px;
   --picture-width: calc( var(--card-height) - 20px);
@@ -15,12 +15,15 @@
   --info-width: calc( var(--card-width) - var(--picture-width) - 30px);
   --info-height: var(--picture-height);
 }
-*, body {
-  background-color: var(--back-color);
+* {
+  background-color: inherit;
   list-style: none;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+body {
+  background-color: var(--back-color);
 }
 img {
   display: block;
@@ -44,13 +47,11 @@ a {
 .title-bar {
   display: flex;
   flex-direction: row;
-  background-color: inherit;
   width: var(--container-width);
 }
 .title {
   text-align: left;
   padding-left: 10px;
-  background-color: inherit;
   font-size: 1.75em;
   color: brown;
   margin: 10px 0 0 0;
@@ -60,7 +61,6 @@ a {
   width: 20%;
   height: 20px;
   margin: 20px 50px 0;
-  background-color: inherit;
 }
 .filter:focus {
 
@@ -97,7 +97,6 @@ a {
   border-radius: 65px;
 }
 .infos {
-  background-color: inherit;
   width: var(--info-width);
   height: var(--info-height);
   margin-left: 10px;
@@ -109,7 +108,6 @@ a {
 .address,
 .birthdate {
   margin-top: 10px;
-  background-color: inherit;
   font-size: 0.7em;
   color: grey;
 }
@@ -124,7 +122,6 @@ a {
 }
 .nav-modal {
   margin-top: 40px;
-  background-color: inherit;
   display: flex;
   flex-direction: row;
 }
@@ -153,6 +150,9 @@ a {
   border-radius: 10px;
   background-color: var(--modal-color);
 }
+#modal.active {
+  display: block;
+}
 #fade-out {
   position: absolute;
   display: none;
@@ -161,4 +161,7 @@ a {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
+}
+#fade-out.active {
+  display: block;
 }

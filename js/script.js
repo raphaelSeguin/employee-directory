@@ -63,11 +63,14 @@ const fillModal = number => {
 }
 
 const showModal = number => {
+  // fill the modal with data from employeesModels[number]
   fillModal(number);
+  // add classes to display the modal
   modalWindow.classList.add('active');
   fadeOut.classList.add('active');
 };
 const hideModal = () => {
+  // remove the classes makes the modal invisible
   modalWindow.classList.remove('active');
   fadeOut.classList.remove('active');
 }
@@ -115,17 +118,29 @@ const init = number => {
   }))
 };
 
+const nav = inc => {
+  let cardNumber = parseInt(modalInfos.className);
+  let limit = 12;
+  do {
+    cardNumber = (cardNumber + 12 + inc) % 12;
+    limit--;
+  } while( employeesModels[cardNumber].filteredOut === true && limit > 0);
+  showModal( cardNumber );
+}
+
 // handles events from the text input
 filterInput.addEventListener('input', (event) => {
-  //
+  // make a regular expression out of the text input
   const regExpToMatch = new RegExp(event.target.value.toUpperCase());
-  // take the card elements
+  // take all the card elements an an array
   const cardsArray = Array.from(document.getElementsByClassName('card'));
-  // for each card
+  // for each card ...
   cardsArray.forEach( (card, index) => {
     // get the name div content
     const cardName = card.getElementsByClassName('name')[0].textContent.toUpperCase();
+    // the username of the corresponding user
     const cardUserName = employeesModels[index].username.toUpperCase();
+    // build a string to test against regular expression
     const searchedString = cardName + ' ' + cardUserName;
     // add or remove the class filtered-out if the name matches the text input
     if ( regExpToMatch.test(searchedString) ) {
@@ -134,32 +149,21 @@ filterInput.addEventListener('input', (event) => {
       card.classList.add('filtered-out');
     }
   });
-  // set the value of filteredOut property
+  // set the value of filteredOut property on the employeesModels array
   employeesModels = employeesModels.map( object => {
     object.filteredOut = !regExpToMatch.test(object.name.toUpperCase() + ' ' + object.username.toUpperCase() );
     return object;
   });
 })
-closeModalAnchor.addEventListener('click', () => {
-  hideModal();
-});
+closeModalAnchor.addEventListener('click', hideModal);
 backModalAnchor.addEventListener('click', () => {
-  let cardNumber = parseInt(modalInfos.className);
-  let limit = 12;
-  do {
-    cardNumber = (cardNumber + 11) % 12;
-    limit--;
-  } while( employeesModels[cardNumber].filteredOut === true && limit > 0);
-  showModal( cardNumber );
+  // go to the next employee that's not filtered out
+  nav(-1);
 });
 forthModalAnchor.addEventListener('click', () => {
-  let cardNumber = parseInt(modalInfos.className);
-  let limit = 12;
-  do {
-    cardNumber = (cardNumber + 13) % 12;
-    limit--;
-  } while( employeesModels[cardNumber].filteredOut === true && limit > 0);
-  showModal( cardNumber );
+  // go to the next employee that's not filtered out
+  nav(1);
 });
 
+// initialize the page !
 init(12);

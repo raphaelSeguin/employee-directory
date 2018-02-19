@@ -1,7 +1,7 @@
 // 'be serious'
 'use strict';
 
-// global variables
+// global variable
 let employeesModels = [];
 
 // elements
@@ -16,10 +16,9 @@ const backModalAnchor = document.getElementById('back-modal');
 const forthModalAnchor = document.getElementById('forth-modal');
 
 // utility function
-const capitalizeFirstLetter = word => {
-  return word.substr(0, 1).toUpperCase() + word.substr(1);
+const capitalizeFirstLetters = words => {
+  return words.split(' ').map( word => word.substr(0, 1).toUpperCase() + word.substr(1) ).join(' ');
 };
-
 // build the elements and attach event handlers
 const fillCard = (data, index) => {
   // destructure the variables from the object data
@@ -49,15 +48,17 @@ const fillCard = (data, index) => {
   return card;
 };
 const fillModal = number => {
-  const {picture, name, email, cellnumber, address, city, birthdate} = employeesModels[number];
+  const {picture, name, username, email, cellnumber, address, city, country, birthdate} = employeesModels[number];
   modalInfos.className = number;
   modalInfos.innerHTML = `<img class="picture modal" src="${picture}" alt="">
       <div class="name modal">${name}</div>
+      <div class="username modal">${username}</div>
       <div class="email modal">${email}</div>
       <div class="city modal">${city}</div>
       <hr></hr>
       <div class="cellnumber modal">${cellnumber}</div>
       <div class="address modal">${address}</div>
+      <div class="country modal">${country}</div>
       <div class="birthdate modal">${birthdate}</div>`;
 }
 
@@ -75,14 +76,14 @@ const hideModal = () => {
 const recondition = json => {
   return {
     picture: json.picture.large,
-    name: capitalizeFirstLetter(json.name.first) + ' ' + capitalizeFirstLetter(json.name.last),
+    name: capitalizeFirstLetters(json.name.first) + ' ' + capitalizeFirstLetters(json.name.last),
     username: json.login.username,
     email: json.email,
     cellnumber: json.cell,
-    city: json.location.city,
-    address: json.location.street + ' ' + json.location.postcode,
-    country: json.location.state,
-    birthdate: json.dob,
+    city: capitalizeFirstLetters(json.location.city),
+    address: capitalizeFirstLetters(json.location.street) + ', ' + json.location.postcode,
+    country: capitalizeFirstLetters(json.location.state),
+    birthdate: 'Birthday: ' + json.dob.split(' ')[0].replace(/-/g, '/'),
     filteredOut: false
   }
 };
@@ -121,11 +122,13 @@ filterInput.addEventListener('input', (event) => {
   // take the card elements
   const cardsArray = Array.from(document.getElementsByClassName('card'));
   // for each card
-  cardsArray.forEach( (card) => {
+  cardsArray.forEach( (card, index) => {
     // get the name div content
     const cardName = card.getElementsByClassName('name')[0].textContent.toUpperCase();
+    const cardUserName = employeesModels[index].username.toUpperCase();
+    const searchedString = cardName + ' ' + cardUserName;
     // add or remove the class filtered-out if the name matches the text input
-    if ( regExpToMatch.test(cardName) ) {
+    if ( regExpToMatch.test(searchedString) ) {
       card.classList.remove('filtered-out');
     } else {
       card.classList.add('filtered-out');
@@ -133,7 +136,7 @@ filterInput.addEventListener('input', (event) => {
   });
   // set the value of filteredOut property
   employeesModels = employeesModels.map( object => {
-    object.filteredOut = !regExpToMatch.test(object.name.toUpperCase());
+    object.filteredOut = !regExpToMatch.test(object.name.toUpperCase() + ' ' + object.username.toUpperCase() );
     return object;
   });
 })

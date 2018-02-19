@@ -102,12 +102,14 @@ a {
   margin-left: 10px;
 }
 .name,
+.username,
 .email,
 .city,
 .cellnumber,
 .address,
+.country,
 .birthdate {
-  margin-top: 10px;
+  margin-top: 5px;
   font-size: 0.7em;
   color: grey;
 }
@@ -146,7 +148,7 @@ a {
   top: 100px;
   left: calc(50% - 200px);
   width: 400px;
-  height: 450px;
+  height: 500px;
   border-radius: 10px;
   background-color: var(--modal-color);
 }
